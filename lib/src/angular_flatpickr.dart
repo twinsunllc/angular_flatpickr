@@ -802,7 +802,7 @@ class Flatpickr implements OnInit, OnDestroy {
 
   /// The array of selected dates (DateTime objects).
   List<DateTime> get selectedDates {
-    return _fp.selectedDates.map((JsObject dateObj) {
+    return _fp.selectedDates.map((dateObj) {
       return _jsDate2DateTime(dateObj);
     }).toList();
   }
@@ -923,7 +923,7 @@ class Flatpickr implements OnInit, OnDestroy {
         if (mode == 'single') {
           if (selectedDates.length == 1) {
             value = selectedDates.first;
-          } 
+          }
         } else {
           value = selectedDates;
         }
@@ -964,15 +964,14 @@ class Flatpickr implements OnInit, OnDestroy {
   }
 
   /// Transforms JS Date to Dart DateTime object
-  DateTime _jsDate2DateTime(JsObject dateObj) {
+  DateTime _jsDate2DateTime(dateObj) {
     return DateTime.parse(FP.formatDate(dateObj, 'Y-m-d H:i:S'));
   }
 }
 
 /// `ngModel` directive controller
 @Directive(selector: '[flatpickr][ngModel]', providers: const [
-  const Provider(NG_VALUE_ACCESSOR,
-      useExisting: FlatpickrValueAccessor, multi: true)
+  ExistingProvider(FlatpickrChangeEvent, FlatpickrValueAccessor, multi: true)
 ])
 class FlatpickrValueAccessor implements ControlValueAccessor {
   /// Flatpickr controller
@@ -989,15 +988,15 @@ class FlatpickrValueAccessor implements ControlValueAccessor {
   /// Handles Flatpickr onChange events
   @HostListener('fpOnChange', const [r'$event'])
   void fpOnChange(FlatpickrChangeEvent event) {
-    _onChange(event.value);
+   if (_onChange != null) _onChange(event.value);
   }
 
   /// Handles onBlure events
-  /// 
+  ///
   /// Calls registered onTouched handlers
   @HostListener('blur')
   void fpOnBlur() {
-    _onTouched();
+    if (_onTouched != null) _onTouched();
   }
 
   /// Writes new value to Flatpickr
@@ -1016,6 +1015,11 @@ class FlatpickrValueAccessor implements ControlValueAccessor {
   @override
   registerOnTouched(TouchFunction fn) {
     _onTouched = fn;
+  }
+
+  @override
+  void onDisabledChanged(bool isDisabled) {
+    // TODO: implement onDisabledChanged
   }
 }
 

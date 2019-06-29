@@ -21,7 +21,7 @@ class FP {
   /// Transforms JS date object to string according to date format
   ///
   /// Returns formatted string
-  external static String formatDate(JsObject dateObj, String dateFormat);
+  external static String formatDate(dateObj, String dateFormat);
 }
 
 @JS()
